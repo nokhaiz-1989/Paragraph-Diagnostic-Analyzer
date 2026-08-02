@@ -54,3 +54,15 @@ if uploaded:
     st.subheader("Component Performance")
     st.bar_chart(avg)
     matrix = []
+    for c in comps:
+        vc = df[c].apply(seg).value_counts()
+        matrix.append([c] + [vc.get(k, 0) for k in ["Minimal", "Needs Improvement", "Developing", "Proficient", "Exemplary"]])
+    mdf = pd.DataFrame(matrix, columns=["Component", "Minimal", "Needs Improvement", "Developing", "Proficient", "Exemplary"])
+    st.subheader("Performance Matrix")
+    st.dataframe(mdf, use_container_width=True)
+    weak = avg.idxmin(); strong = avg.idxmax()
+    c1, c2 = st.columns(2)
+    c1.success(f"Strongest Component: {strong} ({avg.max():.1f}%)")
+    c2.error(f"Weakest Component: {weak} ({avg.min():.1f}%)")
+    st.subheader("Suggested Activities")
+    for a in activities.get(weak, []): st.write("•", a)
